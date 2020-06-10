@@ -20,13 +20,13 @@ transform = transforms.Compose([
     ])
 
 # Training set
-trainset = torchvision.datasets.CIFAR10(root='/datasets',
+trainset = torchvision.datasets.CIFAR10(root='~/datasets',
                                         train=True,
                                         download=True,
                                         transform=transform)
 
 # Test set
-testset = torchvision.datasets.CIFAR10(root='/datasets',
+testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
                                        transform=transform)

@@ -1,7 +1,7 @@
 # Conversion from ONNX to CoreML
 
 
-The conversion from ONNX to CoreML is in this case very simple. I (1) load the ONNX model into a CoreML model and (2) save this CoreML model on disk. The original code can be found in the file [step4.py](step4.py).
+The conversion from ONNX to CoreML is in this case very simple. First I load the ONNX model as a CoreML model, and second I save this CoreML model on disk. The original code can be found in the file [step4.py](step4.py).
 
 ```python
 from onnx_coreml import convert

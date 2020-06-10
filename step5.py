@@ -11,7 +11,7 @@ transform = transforms.Compose([
     ])
 
 # Test set
-testset = torchvision.datasets.CIFAR10(root='/datasets',
+testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
                                        transform=transform)

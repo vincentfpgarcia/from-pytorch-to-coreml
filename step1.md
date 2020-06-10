@@ -11,7 +11,7 @@ In this page, I will introduce how to:
 
 Bellow is the model I'm going to use in this guide. As you can read, it's a combination of convolution layers (+ ReLu + max pooling) followed by several fully connected layers (+ ReLu).
 
-I will not detail what each layer does. However, the following some information might be useful. For this network to work, the input array must be a 3 channels 32x32 array (see next section about CIFAR10). And the last fully connected layer outputs 10 values (for the 10 classes of CIFAR10).
+I will not detail what each layer does. However, the following information might be useful. For this network to work, the input array must be a 3 channels 32x32 array (see next section about CIFAR10). And the last fully connected layer outputs 10 values (for the 10 classes of CIFAR10).
 
 ```python
 import torch.nn as nn
@@ -71,13 +71,13 @@ transform = transforms.Compose([
     ])
 
 # Training set
-trainset = torchvision.datasets.CIFAR10(root='/datasets',
+trainset = torchvision.datasets.CIFAR10(root='~/datasets',
                                         train=True,
                                         download=True,
                                         transform=transform)
 
 # Test set
-testset = torchvision.datasets.CIFAR10(root='/datasets',
+testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
                                        transform=transform)

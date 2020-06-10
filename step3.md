@@ -6,9 +6,9 @@ First, I instantiate my neural network and I load the weights, exactly as the [p
 
 Second, I define a dummy input. This means I create a tensor having a size compatible with what the network is expecting. In my case, the network has been trained with mini-batches of size 10x3x32x32 (batch size, channels, height, width). I simply create here a random tensor of size 1x3x32x32 corresponding to a batch of 1 image.
 
-Third, I define a name for the input and output nodes. In my case, I have 1 input (the image) and 1 output (10 values). This is very important to give meaningful name to the network inputs/outputs for later use. If well done, one would not need to know anything about the network to know how to use it.
+Third, I define a name for the input and output nodes. In my case, I have 1 input (the image) and 1 output (array of 10 values). This is very important to give meaningful input / output names to the network nodes for later use. If done well, one would not need to know anything about the network to know how to use it.
 
-Finally, I convert the 
+Finally, I convert the PyTorch model into an ONNX model. Note that I pass the input / output names to the conversion function.
 
 ```python
 import torch
