@@ -8,17 +8,11 @@ from model import MyNet
 # Parameters
 batch_size = 10
 
-# Transformation to apply
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-
 # Test set
 testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
-                                       transform=transform)
+                                       transform=transforms.ToTensor())
 
 # Test set loader
 testloader = torch.utils.data.DataLoader(dataset=testset,

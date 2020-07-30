@@ -20,17 +20,11 @@ Again, I'm going to use here the CIFAR10 dataset through torchvision. But this t
 # Parameters
 batch_size = 10
 
-# Transformation to apply
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-
 # Test set
 testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
-                                       transform=transform)
+                                       transform=transforms.ToTensor())
 
 # Test set loader
 testloader = torch.utils.data.DataLoader(dataset=testset,
@@ -50,7 +44,7 @@ model.load_state_dict(torch.load('my_network.pth'))
 model.eval()
 ```
 
-An finally I compute the accuracy:
+And finally I compute the accuracy:
 
 ```python
 # Compute test set accuracy
@@ -69,4 +63,4 @@ accuracy = 100. * correct / total
 print('Test accuracy = %6.2f %%' % accuracy)
 ```
 
-Using this script, I obtain a 67.48 % accuracy on the test set. Good that's exactly what I had at training time on the same dataset.
+Using this script, I obtain a 71.83 % accuracy on the test set. Good! That's exactly what I had at training time on the same dataset.

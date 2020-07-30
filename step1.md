@@ -9,33 +9,70 @@ In this page, I will introduce how to:
 
 ## Neural network
 
-Bellow is the model I'm going to use in this guide. As you can read, it's a combination of convolution layers (+ ReLu + max pooling) followed by several fully connected layers (+ ReLu).
+Bellow is the model I'm going to use in this guide. As you can read, it's a combination of convolution layers (batch normalization + ReLu + max pooling) followed by several fully connected layers (dropout + ReLu). The original code can be found in the file [model.py](model.py).
 
 I will not detail what each layer does. However, the following information might be useful. For this network to work, the input array must be a 3 channels 32x32 array (see next section about CIFAR10). And the last fully connected layer outputs 10 values (for the 10 classes of CIFAR10).
 
 ```python
 import torch.nn as nn
-import torch.nn.functional as F
+
 
 class MyNet(nn.Module):
     def __init__(self):
         super(MyNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 3, padding=1)
-        self.conv2 = nn.Conv2d(6, 12, 3, padding=1)
-        self.conv3 = nn.Conv2d(12, 24, 3, padding=1)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.fc1 = nn.Linear(24 * 4 * 4, 192)
-        self.fc2 = nn.Linear(192, 96)
-        self.fc3 = nn.Linear(96, 10)
+
+        # Convolutional layers
+        self.conv_layers = nn.Sequential (
+
+            # First convolutional layer
+            nn.Conv2d(in_channels=3, out_channels=6, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(num_features=6),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            # Second convolutional layer
+            nn.Conv2d(in_channels=6, out_channels=12, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(num_features=12),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            # Third convolutional layer
+            nn.Conv2d(in_channels=12, out_channels=24, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(num_features=24),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+
+        # Fully connected layers
+        self.fc_layers = nn.Sequential (
+
+            # Dropout layer
+            nn.Dropout(p=0.1),
+
+            # First fully connected layer
+            nn.Linear(in_features=24 * 4 * 4, out_features=192),
+            nn.ReLU(inplace=True),
+
+            # Second fully connected layer
+            nn.Linear(in_features=192, out_features=96),
+            nn.ReLU(inplace=True),
+
+            # Third fully connected layer
+            nn.Linear(in_features=96, out_features=10),
+        )
+
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.pool(F.relu(self.conv3(x)))
+
+        # Convolutional layers
+        x = self.conv_layers(x)
+
+        # Flatten
         x = x.view(-1, 24 * 4 * 4)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+
+        # Fully connected layers
+        x = self.fc_layers(x)
+
         return x
 ```
 
@@ -64,23 +101,17 @@ momentum = 0.9
 I am going to use the [CIFAR10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html). Torch and torchvision provide nice helpers to access popular image classification datasets. Using the following code, I simply create the training and the test sets.
 
 ```python
-# Transformation to apply
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-
 # Training set
 trainset = torchvision.datasets.CIFAR10(root='~/datasets',
                                         train=True,
                                         download=True,
-                                        transform=transform)
+                                        transform=transforms.ToTensor())
 
 # Test set
 testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
-                                       transform=transform)
+                                       transform=transforms.ToTensor())
 
 # Training set loader
 trainloader = torch.utils.data.DataLoader(dataset=trainset,
@@ -106,6 +137,8 @@ print('Training set size : %d' % train_nb)
 print('Test set size     : %d' % test_nb)
 print('Image size        : %d x %d\n' % (height, width))
 ```
+
+The `torchvision.datasets.CIFAR10` module returns PIL images. The `DataLoader` module manipulates tensors or Numpy arrays. The transformation `transforms.ToTensor()` passed as parameter of `torchvision.datasets.CIFAR10` simply converts PIL images into tensors.
 
 Now I instantiate my network. I also define the loss and the optimizer.
 
@@ -199,9 +232,9 @@ Using this code, I get the following output. Some notes:
 - The training and test sets have respectively 50000 and 10000 images
 - The input image size is 32x32
 - The loss decreases (most of the time) over mini-batches (expected)
-- The training and test accuracies increases over epochs (expected)
+- The training and test accuracie increases (most of the time) over epochs (expected)
 - The training accuracy is higher than the test accuracy (expected)
-- The final test accuracy is 67.48 %, which is far superior compared to the 10% resulting from a random choice ;)
+- The final test accuracy is 71.83 %, which is far superior compared to the 10% resulting from a random choice ;)
 
 ```
 Training set size : 50000
@@ -209,64 +242,64 @@ Test set size     : 10000
 Image size        : 32 x 32
 
 Training
-Epoch :  0, mini-batch : 1000, loss : 2.302
-Epoch :  0, mini-batch : 2000, loss : 2.294
-Epoch :  0, mini-batch : 3000, loss : 2.157
-Epoch :  0, mini-batch : 4000, loss : 1.990
-Epoch :  0, mini-batch : 5000, loss : 1.890
-Epoch :  0, training accuracy =  31.30 %, test accuracy =  31.69 %
-Epoch :  1, mini-batch : 1000, loss : 1.753
-Epoch :  1, mini-batch : 2000, loss : 1.664
-Epoch :  1, mini-batch : 3000, loss : 1.569
-Epoch :  1, mini-batch : 4000, loss : 1.534
-Epoch :  1, mini-batch : 5000, loss : 1.476
-Epoch :  1, training accuracy =  47.14 %, test accuracy =  47.23 %
-Epoch :  2, mini-batch : 1000, loss : 1.426
-Epoch :  2, mini-batch : 2000, loss : 1.393
-Epoch :  2, mini-batch : 3000, loss : 1.349
-Epoch :  2, mini-batch : 4000, loss : 1.346
-Epoch :  2, mini-batch : 5000, loss : 1.302
-Epoch :  2, training accuracy =  55.30 %, test accuracy =  54.16 %
-Epoch :  3, mini-batch : 1000, loss : 1.255
-Epoch :  3, mini-batch : 2000, loss : 1.245
-Epoch :  3, mini-batch : 3000, loss : 1.212
-Epoch :  3, mini-batch : 4000, loss : 1.178
-Epoch :  3, mini-batch : 5000, loss : 1.166
-Epoch :  3, training accuracy =  59.12 %, test accuracy =  57.84 %
-Epoch :  4, mini-batch : 1000, loss : 1.130
-Epoch :  4, mini-batch : 2000, loss : 1.103
-Epoch :  4, mini-batch : 3000, loss : 1.093
-Epoch :  4, mini-batch : 4000, loss : 1.086
-Epoch :  4, mini-batch : 5000, loss : 1.075
-Epoch :  4, training accuracy =  64.75 %, test accuracy =  62.31 %
-Epoch :  5, mini-batch : 1000, loss : 1.033
-Epoch :  5, mini-batch : 2000, loss : 1.025
-Epoch :  5, mini-batch : 3000, loss : 1.025
-Epoch :  5, mini-batch : 4000, loss : 0.992
-Epoch :  5, mini-batch : 5000, loss : 0.991
-Epoch :  5, training accuracy =  67.58 %, test accuracy =  63.80 %
-Epoch :  6, mini-batch : 1000, loss : 0.931
-Epoch :  6, mini-batch : 2000, loss : 0.961
-Epoch :  6, mini-batch : 3000, loss : 0.956
-Epoch :  6, mini-batch : 4000, loss : 0.939
-Epoch :  6, mini-batch : 5000, loss : 0.952
-Epoch :  6, training accuracy =  70.29 %, test accuracy =  65.29 %
-Epoch :  7, mini-batch : 1000, loss : 0.878
-Epoch :  7, mini-batch : 2000, loss : 0.885
-Epoch :  7, mini-batch : 3000, loss : 0.885
-Epoch :  7, mini-batch : 4000, loss : 0.901
-Epoch :  7, mini-batch : 5000, loss : 0.888
-Epoch :  7, training accuracy =  72.02 %, test accuracy =  66.18 %
-Epoch :  8, mini-batch : 1000, loss : 0.816
-Epoch :  8, mini-batch : 2000, loss : 0.838
-Epoch :  8, mini-batch : 3000, loss : 0.832
-Epoch :  8, mini-batch : 4000, loss : 0.852
-Epoch :  8, mini-batch : 5000, loss : 0.859
-Epoch :  8, training accuracy =  73.76 %, test accuracy =  66.22 %
-Epoch :  9, mini-batch : 1000, loss : 0.770
-Epoch :  9, mini-batch : 2000, loss : 0.802
-Epoch :  9, mini-batch : 3000, loss : 0.805
-Epoch :  9, mini-batch : 4000, loss : 0.790
-Epoch :  9, mini-batch : 5000, loss : 0.812
-Epoch :  9, training accuracy =  75.81 %, test accuracy =  67.48 %
+Epoch :  0, mini-batch : 1000, loss : 1.973
+Epoch :  0, mini-batch : 2000, loss : 1.611
+Epoch :  0, mini-batch : 3000, loss : 1.493
+Epoch :  0, mini-batch : 4000, loss : 1.418
+Epoch :  0, mini-batch : 5000, loss : 1.348
+Epoch :  0, training accuracy =  50.29 %, test accuracy =  49.72 %
+Epoch :  1, mini-batch : 1000, loss : 1.292
+Epoch :  1, mini-batch : 2000, loss : 1.249
+Epoch :  1, mini-batch : 3000, loss : 1.218
+Epoch :  1, mini-batch : 4000, loss : 1.205
+Epoch :  1, mini-batch : 5000, loss : 1.162
+Epoch :  1, training accuracy =  58.88 %, test accuracy =  57.40 %
+Epoch :  2, mini-batch : 1000, loss : 1.131
+Epoch :  2, mini-batch : 2000, loss : 1.116
+Epoch :  2, mini-batch : 3000, loss : 1.079
+Epoch :  2, mini-batch : 4000, loss : 1.081
+Epoch :  2, mini-batch : 5000, loss : 1.070
+Epoch :  2, training accuracy =  67.04 %, test accuracy =  64.95 %
+Epoch :  3, mini-batch : 1000, loss : 1.011
+Epoch :  3, mini-batch : 2000, loss : 1.017
+Epoch :  3, mini-batch : 3000, loss : 1.023
+Epoch :  3, mini-batch : 4000, loss : 1.009
+Epoch :  3, mini-batch : 5000, loss : 1.000
+Epoch :  3, training accuracy =  67.20 %, test accuracy =  64.53 %
+Epoch :  4, mini-batch : 1000, loss : 0.948
+Epoch :  4, mini-batch : 2000, loss : 0.968
+Epoch :  4, mini-batch : 3000, loss : 0.957
+Epoch :  4, mini-batch : 4000, loss : 0.958
+Epoch :  4, mini-batch : 5000, loss : 0.947
+Epoch :  4, training accuracy =  67.66 %, test accuracy =  64.58 %
+Epoch :  5, mini-batch : 1000, loss : 0.917
+Epoch :  5, mini-batch : 2000, loss : 0.901
+Epoch :  5, mini-batch : 3000, loss : 0.892
+Epoch :  5, mini-batch : 4000, loss : 0.901
+Epoch :  5, mini-batch : 5000, loss : 0.906
+Epoch :  5, training accuracy =  72.14 %, test accuracy =  68.57 %
+Epoch :  6, mini-batch : 1000, loss : 0.858
+Epoch :  6, mini-batch : 2000, loss : 0.860
+Epoch :  6, mini-batch : 3000, loss : 0.879
+Epoch :  6, mini-batch : 4000, loss : 0.861
+Epoch :  6, mini-batch : 5000, loss : 0.871
+Epoch :  6, training accuracy =  74.42 %, test accuracy =  69.60 %
+Epoch :  7, mini-batch : 1000, loss : 0.824
+Epoch :  7, mini-batch : 2000, loss : 0.833
+Epoch :  7, mini-batch : 3000, loss : 0.820
+Epoch :  7, mini-batch : 4000, loss : 0.825
+Epoch :  7, mini-batch : 5000, loss : 0.819
+Epoch :  7, training accuracy =  74.88 %, test accuracy =  69.87 %
+Epoch :  8, mini-batch : 1000, loss : 0.771
+Epoch :  8, mini-batch : 2000, loss : 0.792
+Epoch :  8, mini-batch : 3000, loss : 0.804
+Epoch :  8, mini-batch : 4000, loss : 0.787
+Epoch :  8, mini-batch : 5000, loss : 0.819
+Epoch :  8, training accuracy =  72.53 %, test accuracy =  67.09 %
+Epoch :  9, mini-batch : 1000, loss : 0.767
+Epoch :  9, mini-batch : 2000, loss : 0.788
+Epoch :  9, mini-batch : 3000, loss : 0.769
+Epoch :  9, mini-batch : 4000, loss : 0.775
+Epoch :  9, mini-batch : 5000, loss : 0.788
+Epoch :  9, training accuracy =  78.51 %, test accuracy =  71.83 %
 ```

@@ -13,23 +13,17 @@ nb_epochs = 10
 learning_rate = 0.001
 momentum = 0.9
 
-# Transformation to apply
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-
 # Training set
 trainset = torchvision.datasets.CIFAR10(root='~/datasets',
                                         train=True,
                                         download=True,
-                                        transform=transform)
+                                        transform=transforms.ToTensor())
 
 # Test set
 testset = torchvision.datasets.CIFAR10(root='~/datasets',
                                        train=False,
                                        download=True,
-                                       transform=transform)
+                                       transform=transforms.ToTensor())
 
 # Training set loader
 trainloader = torch.utils.data.DataLoader(dataset=trainset,

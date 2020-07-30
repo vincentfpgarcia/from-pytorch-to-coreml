@@ -1,6 +1,6 @@
 # Motivation
 
-I present here a simple guide that explains the steps needed from training a simple PyTorch image classifier to converting the trained neural network into a CoreML model ready for production. I've spent days crawling Internet blogs, forums and official documentations to gather the little knowledge presented in these pages. The true motivation of this repo is to prevent me to forget everything I know about this particular subject. If this guide helps someone else to move forward into her/his research, that's a plus to me. Please read the disclaimer.
+I present here a simple guide that explains the steps needed from training a simple PyTorch image classifier to converting the trained neural network into a CoreML model ready for production. I've spent days crawling Internet blogs, forums and official documentations to gather the little knowledge presented in these pages. The true motivation of this repo is to prevent me from forgetting everything I know about this particular subject. And if this guide helps someone else move forward into her/his research, that's a plus. Please read the disclaimer.
 
 
 # The guide
@@ -12,13 +12,12 @@ I present bellow **my** solution divided into several steps:
 - [Step 1](step1.md): Train a model using PyTorch and save it
 - [Step 2](step2.md): Load the model and test it (for verification purpose)
 - [Step 3](step3.md): Convert the PyTorch model into a ONNX model
-- [Step 4](step4.md): Convert the ONNX model into a CoreML model
-- [Step 5](step5.md): Test the CoreML model
+- [Step 4](step4.md): Convert the ONNX model into a CoreML model and test it
 
 
 # Virtual environment
 
-For this work, I've been using [Conda](https://docs.conda.io) through [Anaconda](https://www.anaconda.com/) for (1) creating a virtual environment and (2) installing most of the used Python packages. Please read the official documentations for more information.
+For this work, I've been using [Conda](https://docs.conda.io) through [Anaconda](https://www.anaconda.com/) for (1) creating a virtual environment and (2) installing most of the used Python packages. Please read the official documentations for more information. You can also read my other [Github repository](https://github.com/vincentfpgarcia/cookbook/blob/master/python/anaconda.md) explaining how to install and use Anaconda.
 
 
 # Disclaimer
