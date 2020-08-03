@@ -2,7 +2,7 @@
 
 In the following code, I load the converted CoreML model and test it on one image from the CIFAR10 dataset. The purpose here is not to validate the model but to explain how to use the CoreML model and coremltools to perform an inference in Python.
 
-The original code presented here can be found in the file [step4_part3.py](step4_part3.py)
+The original code presented here can be found in the file [step4_part3.py](step4_part3.py).
 
 ```python
 import coremltools

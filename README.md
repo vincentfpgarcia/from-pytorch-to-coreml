@@ -12,7 +12,8 @@ I present bellow **my** solution divided into several steps:
 - [Step 1](step1.md): Train a model using PyTorch and save it
 - [Step 2](step2.md): Load the model and test it (for verification purpose)
 - [Step 3](step3.md): Convert the PyTorch model into a ONNX model
-- [Step 4](step4.md): Convert the ONNX model into a CoreML model and test it
+- [Step 4](step4.md): Convert the ONNX model into a CoreML model
+- [Step 5](step5.md): Convert the ONNX model into a CoreML model (improved version)
 
 
 # Virtual environment
