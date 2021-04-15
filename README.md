@@ -31,22 +31,16 @@ For this work, I've been using [Conda](https://docs.conda.io) through [Anaconda]
 
 As presented in the _motivation_ section, the target audience of this guide is me. I am of course happy if it helps other coders around the world. I do not certify the code presented is the best or even the correct way to using PyTorch, ONNX, coremltools, etc. The code is probably uncomplete and might even contain serious bugs. In addition, this code will probably ceased to work with the newer versions of the different libraries and the evolution of PyTorch itself. Use this code at your own risk.
 
-The code presented here has tested in 2020 on a MacBook Pro using:
+The code presented here has tested in 2021 on a MacBook Pro using:
 
-- For coremltools 3
-	- pytorch 1.5.0
-	- torchvision 0.6.0
-	- onnx 1.7.0
-	- onnx-coreml 1.3
-	- coremltools 3.4
-	- numpy 1.18.1
-	- pillow 7.0.0
-- For coremltools 4
-	- pytorch 1.8.0
-	- torchvision 0.9.0
-	- coremltools 4.1
-	- numpy 1.19.2
-	- pillow 8.2.0
+- python 3.7
+- pytorch 1.8.0
+- torchvision 0.9.0
+- onnx 1.8.1
+- onnx-coreml 1.3
+- coremltools 3.4 / 4.1
+- numpy 1.19.2
+- pillow 8.2.0
 
 If you see something wrong, please let me know and I'll be happy to make modifications.
 
